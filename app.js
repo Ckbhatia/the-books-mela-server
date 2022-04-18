@@ -1,14 +1,13 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-var indexRouter = require('./routes/index');
+const indexRouter = require('./routes/index');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,9 +22,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 const isNotProduction = process.env.NODE_ENV !== "production";
 if (isNotProduction) require("dotenv").config();
 
+const whitelist = [process.env.CLIENT_URL_PRODUCTION, process.env.CLIENT_URL_LOCAL]
 const corsOptions = {
-  origin: process.env.CLIENT_URL,
-  optionsSuccessStatus: 200 
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
 }
 
 // Connecting With DataBase

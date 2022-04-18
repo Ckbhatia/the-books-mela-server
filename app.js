@@ -23,6 +23,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const isNotProduction = process.env.NODE_ENV !== "production";
 if (isNotProduction) require("dotenv").config();
 
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  optionsSuccessStatus: 200 
+}
+
 // Connecting With DataBase
 mongoose.connect(
   process.env.DB_URL,
@@ -41,7 +46,7 @@ mongoose.connect(
 );
 
 app.use('/', indexRouter);
-app.use('/api/v1/books', cors(), require('./routes/books'));
+app.use('/api/v1/books', cors(corsOptions), require('./routes/books'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -16,7 +16,7 @@ router.post('/', async (req, res, next) => {
     if (bookSearches?.length > 0) {
       for (let bookSearch of bookSearches) {
         if (bookSearch?.searchString === searchQuery) {
-          response = res.status(200).json({ message: "Book search already saved" });
+          response = res.status(400).json({ message: "Book search already saved" });
           break;
         }
       }

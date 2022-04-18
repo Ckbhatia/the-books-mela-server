@@ -3,9 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require("mongoose");
+const cors = require("cors");
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -19,8 +20,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const isNotProduction = process.env.NODE_ENV !== "production";
+if (isNotProduction) require("dotenv").config();
+
+// Connecting With DataBase
+mongoose.connect(
+  process.env.DB_URL,
+  { useUnifiedTopology: true, useNewUrlParser: true },
+  function (err) {
+    if (err) {
+      if(isNotProduction) {
+        console.log(err);
+      }
+    } else {
+      if(isNotProduction) {
+        console.log("DB connected");
+      }
+    }
+  }
+);
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1/books', cors(), require('./routes/books'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
